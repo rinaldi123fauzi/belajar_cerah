@@ -1,0 +1,16 @@
+<fieldset class="manual ldap fields">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Area</label>
+        <div class="col-sm-8">
+        <% if current_user.roles.any? { |r| r.name == "RCT Area" } %>
+            <% domicile = Domicile.includes(:user_domiciles).where('user_domiciles.user_id': current_user.id).first %>
+            <input type="text" value="<%= domicile.name %>" readonly="" class="form-control">
+            <%= f.hidden_field :domicile_id, class: 'form-control', value: domicile.id %>
+        <% else %>
+            <%= f.grouped_collection_select :domicile_id, Division.all, :domiciles, :name, :id, :name, {include_blank: true}, class: 'form-control', id: 'area' %>
+        <% end %>
+            <%= f.hidden_field :_destroy %>
+            <%= link_to_remove_fields 'Remove', '.fields' %>
+        </div>
+    </div>
+</fieldset>

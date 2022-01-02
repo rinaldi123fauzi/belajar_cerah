@@ -1,0 +1,159 @@
+<% content_for :ribbon do %>
+  <!-- RIBBON -->
+  <div id="ribbon">
+
+  <span class="ribbon-button-alignment">
+    <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh"  rel="tooltip" data-placement="bottom" data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings." data-html="true">
+      <i class="fa fa-refresh"></i>
+    </span>
+  </span>
+
+    <!-- breadcrumb -->
+    <ol class="breadcrumb">
+      <li>Home</li><li>Tables</li><li>Normal Tables</li>
+    </ol>
+    <!-- end breadcrumb -->
+
+    <!-- You can also add more buttons to the
+    ribbon for further usability
+
+    Example below:
+
+    <span class="ribbon-button-alignment pull-right">
+    <span id="search" class="btn btn-ribbon hidden-xs" data-title="search"><i class="fa-grid"></i> Change Grid</span>
+    <span id="add" class="btn btn-ribbon hidden-xs" data-title="add"><i class="fa-plus"></i> Add</span>
+    <span id="search" class="btn btn-ribbon" data-title="search"><i class="fa-search"></i> <span class="hidden-mobile">Search</span></span>
+    </span> -->
+
+  </div>
+  <!-- END RIBBON -->
+<% end %>
+<div class="content">
+
+  <h3>User</h3>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Form User</div>
+    <div class="panel-body">
+      <%= form_for @user, html: {class: 'form-horizontal'} do |f| %>
+        <fieldset>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Data Source</label>
+            <div class="col-sm-8">
+              <%= f.text_field :user_type, class: 'dtSource form-control', readonly: true %>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="manual ldap">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Nama</label>
+            <div class="col-sm-8">
+              <%= f.text_field :name, class: 'form-control' %>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="manual ldap">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Username</label>
+            <div class="col-sm-8">
+              <%= f.text_field :username, class: 'form-control' %>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="manual ldap">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-8">
+              <%= f.email_field :email, class: 'form-control' %>
+            </div>
+          </div>
+        </fieldset>
+        <% if @user.user_type == "Manual" %>
+          <fieldset>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Password</label>
+              <div class="col-sm-8">
+                <%= f.password_field :password, class: 'form-control' %>
+              </div>
+            </div>
+          </fieldset>
+        <% else %>
+          <% f.hidden_field :password, value: @user.password %>
+        <% end %>
+        <fieldset class="manual ldap">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Role</label>
+            <div class="col-sm-8">
+              <%= f.collection_check_boxes :role_ids, Role.all, :id, :name do |m| %>
+                <%= m.label class: 'checkbox-inline' do %>
+                  <%= m.check_box class: 'checkbox-inline' %>
+                  <%= m.text %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-2">
+              <%= link_to 'Cancel', users_path, class: 'btn btn-default' %>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </fieldset>
+      <% end %>
+    </div>
+  </div>
+
+  <script>
+      $(document).ready(function () {
+
+          if ($(".dtSource").val() == "Manual") {
+              $('.ldap').hide();
+              $('.manual').show();
+              $('#users dodol').disabled = false;
+              $('#users username').required = true;
+              $('#users password').required = true;
+              $('#users email').required = true;
+          } else if ($(".dtSource").val() == "LDAP") {
+              $('.manual').hide();
+              $('.ldap').show();
+              $('#users dodol').disabled = true;
+              $('#users username').required = false;
+              $('#users password').required = false;
+              $('#users email').required = false;
+          } else {
+              $('.ldap').hide();
+              $('.manual').hide();
+              $('#users dodol').disabled = false;
+          }
+      });
+
+      $("#dodol").select2({
+          theme: "bootstrap"
+      });
+      $("#divisi").select2({
+          theme: "bootstrap"
+      });
+      $("#area").select2({
+          theme: "bootstrap"
+      });
+
+      jQuery(function () {
+          var area = $('#area').html();
+          console.log(area);
+
+          return $('#divisi').change(function () {
+              var divisi, options;
+              divisi = $('#divisi :selected').text();
+              options = $(area).filter("optgroup[label=" + divisi + "]").html();
+              console.log(options);
+              if (options) {
+                  return $('#area').html(options);
+              } else {
+                  return $('#area').empty();
+              }
+          })
+      });
+
+  </script>
